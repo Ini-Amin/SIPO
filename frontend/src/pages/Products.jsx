@@ -96,96 +96,80 @@ function Products() {
   }
 
   return (
-    <main className="min-h-svh">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
-            <ShoppingCart className="size-5" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-lg font-semibold tracking-tight">SIPO</p>
-            <p className="text-xs text-muted-foreground">
-              Sistem Informasi Point of Sale
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Badge
-              variant="secondary"
-              className="mb-3 bg-emerald-100 text-emerald-800"
-            >
-              Manajemen Produk
-            </Badge>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Daftar Produk
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Pantau harga dan ketersediaan stok produk yang tersimpan di
-              backend SIPO.
-            </p>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={reloadProducts}
-            disabled={isLoading}
+   <div className="animate-in fade-in duration-200">
+      <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <Badge
+            variant="secondary"
+            className="mb-3 bg-emerald-100 text-emerald-800"
           >
-            <RefreshCw
-              className={isLoading ? "animate-spin" : ""}
-              data-icon="inline-start"
-              aria-hidden="true"
-            />
-            Muat ulang
-          </Button>
+            Manajemen Produk
+          </Badge>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Daftar Produk
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Pantau harga dan ketersediaan stok produk yang tersimpan di
+            backend SIPO.
+          </p>
         </div>
 
-        {!isLoading && !errorMessage && products.length > 0 && (
-          <section
-            className="mb-6 grid gap-4 sm:grid-cols-3"
-            aria-label="Ringkasan produk"
-          >
-            <SummaryCard
-              title="Total Produk"
-              value={products.length}
-              description="Jenis produk terdaftar"
-              icon={Package}
-            />
-            <SummaryCard
-              title="Total Stok"
-              value={summary.totalStock}
-              description="Unit tersedia saat ini"
-              icon={Boxes}
-            />
-            <SummaryCard
-              title="Stok Rendah"
-              value={summary.lowStock}
-              description={`Stok ${LOW_STOCK_LIMIT} unit atau kurang`}
-              icon={TriangleAlert}
-              warning={summary.lowStock > 0}
-            />
-          </section>
-        )}
-
-        {isLoading && <LoadingState />}
-
-        {!isLoading && errorMessage && (
-          <ErrorState message={errorMessage} onRetry={reloadProducts} />
-        )}
-
-        {!isLoading && !errorMessage && products.length === 0 && (
-          <EmptyState onReload={reloadProducts} />
-        )}
-
-        {!isLoading && !errorMessage && products.length > 0 && (
-          <ProductTable products={products} />
-        )}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={reloadProducts}
+          disabled={isLoading}
+        >
+          <RefreshCw
+            className={isLoading ? "animate-spin" : ""}
+            data-icon="inline-start"
+            aria-hidden="true"
+          />
+          Muat ulang
+        </Button>
       </div>
-    </main>
+
+      {!isLoading && !errorMessage && products.length > 0 && (
+        <section
+          className="mb-6 grid gap-4 sm:grid-cols-3"
+          aria-label="Ringkasan produk"
+        >
+          <SummaryCard
+            title="Total Produk"
+            value={products.length}
+            description="Jenis produk terdaftar"
+            icon={Package}
+          />
+          <SummaryCard
+            title="Total Stok"
+            value={summary.totalStock}
+            description="Unit tersedia saat ini"
+            icon={Boxes}
+          />
+          <SummaryCard
+            title="Stok Rendah"
+            value={summary.lowStock}
+            description={`Stok ${LOW_STOCK_LIMIT} unit atau kurang`}
+            icon={TriangleAlert}
+            warning={summary.lowStock > 0}
+          />
+        </section>
+      )}
+
+      {isLoading && <LoadingState />}
+
+      {!isLoading && errorMessage && (
+        <ErrorState message={errorMessage} onRetry={reloadProducts} />
+      )}
+
+      {!isLoading && !errorMessage && products.length === 0 && (
+        <EmptyState onReload={reloadProducts} />
+      )}
+
+      {!isLoading && !errorMessage && products.length > 0 && (
+        <ProductTable products={products} />
+      )}
+    </div>
   );
 }
 
