@@ -1,12 +1,17 @@
-const { beforeEach, describe, test } = require("node:test");
+const { beforeEach, after, describe, test } = require("node:test");
 const assert = require("node:assert/strict");
 const request = require("supertest");
 
 const app = require("../app");
 const productModel = require("../models/productModel");
+const db = require("../config/db");
 
-beforeEach(() => {
-  productModel.resetProducts();
+beforeEach(async () => {
+  await productModel.resetProducts();
+});
+
+after(async () => {
+  await db.end();
 });
 
 describe("SIPO API", () => {

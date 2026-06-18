@@ -1,79 +1,68 @@
-const initialCategories = [
-  {
-    id: 1,
-    name: "Elektronik",
-    description: "Produk-produk elektronik dan aksesorisnya",
-  },
-  {
-    id: 2,
-    name: "Alat Tulis",
-    description: "Perlengkapan kantor dan alat tulis",
-  },
-];
+const db = require("../config/db");
 
-let categories = initialCategories.map((category) => ({ ...category }));
-let nextId = 3;
-
-function findAll() {
-  return categories.map((category) => ({ ...category }));
+async function findAll() {
+  const [rows] = await db.query("SELECT * FROM categories ORDER BY id ASC");
+  return rows;
 }
 
-function findById(id) {
-  const category = categories.find((item) => item.id === id);
-  return category ? { ...category } : null;
+async function findById(id) {
+  const [rows] = await db.query("SELECT * FROM categories WHERE id = ?", [id]);
+  return rows.length > 0 ? rows[0] : null;
 }
 
-function findByName(name) {
+async function findByName(name) {
   const normalizedName = name.trim().toLowerCase();
-  return categories.find(
-    (item) => item.name.toLowerCase() === normalizedName
-  ) || null;
+  const [rows] = await db.query("SELECT * FROM categories WHERE LOWER(name) = ?", [normalizedName]);
+  return rows.length > 0 ? rows[0] : null;
 }
 
-function create(categoryData) {
-  const category = {
-    id: nextId,
-    name: categoryData.name.trim(),
-    description: categoryData.description ? categoryData.description.trim() : "",
-  };
-
-  nextId += 1;
-  categories.push(category);
-
-  return { ...category };
+async function create(categoryData) {
+  const name = categoryData.name.trim();
+  const description = categoryData.description ? categoryData.description.trim() : "";
+  
+  const [result] = await db.query(
+    "INSERT INTO categories (name, description) VALUES (?, ?)",
+    [name, description]
+  );
+  
+  return { id: result.insertId, name, description };
 }
 
-function update(id, categoryData) {
-  const categoryIndex = categories.findIndex((item) => item.id === id);
-
-  if (categoryIndex === -1) {
+async function update(id, categoryData) {
+  const name = categoryData.name.trim();
+  const description = categoryData.description ? categoryData.description.trim() : "";
+  
+  const [existing] = await db.query("SELECT * FROM categories WHERE id = ?", [id]);
+  if (existing.length === 0) {
     return null;
   }
 
-  categories[categoryIndex] = {
-    id,
-    name: categoryData.name.trim(),
-    description: categoryData.description ? categoryData.description.trim() : "",
-  };
-
-  return { ...categories[categoryIndex] };
+  await db.query(
+    "UPDATE categories SET name = ?, description = ? WHERE id = ?",
+    [name, description, id]
+  );
+  
+  return { id, name, description };
 }
 
-function remove(id) {
-  const categoryIndex = categories.findIndex((item) => item.id === id);
-
-  if (categoryIndex === -1) {
-    return null;
-  }
-
-  const [deletedCategory] = categories.splice(categoryIndex, 1);
-  return { ...deletedCategory };
+async function remove(id) {
+  const category = await findById(id);
+  if (!category) return null;
+  
+  await db.query("DELETE FROM categories WHERE id = ?", [id]);
+  return category;
 }
 
-// Mengembalikan data awal agar setiap pengujian berjalan secara independen.
-function resetCategories() {
-  categories = initialCategories.map((category) => ({ ...category }));
-  nextId = 3;
+// Untuk reset database saat pengujian (menghapus semua data dan memasukkan seed kembali)
+async function resetCategories() {
+  await db.query("SET FOREIGN_KEY_CHECKS = 0;");
+  await db.query("TRUNCATE TABLE categories;");
+  await db.query("SET FOREIGN_KEY_CHECKS = 1;");
+  await db.query(`
+    INSERT INTO categories (id, name, description) VALUES
+    (1, 'Elektronik', 'Produk-produk elektronik dan aksesorisnya'),
+    (2, 'Alat Tulis', 'Perlengkapan kantor dan alat tulis')
+  `);
 }
 
 module.exports = {

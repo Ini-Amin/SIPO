@@ -13,6 +13,11 @@ function parseCategoryId(id) {
 function validateCategory(body) {
   const errors = [];
 
+  if (!body || typeof body !== "object") {
+    errors.push("Data request body tidak ditemukan");
+    return errors;
+  }
+
   if (typeof body.name !== "string" || body.name.trim() === "") {
     errors.push("Nama kategori wajib diisi");
   }
@@ -28,9 +33,9 @@ function validateCategory(body) {
   return errors;
 }
 
-function getCategories(req, res, next) {
+async function getCategories(req, res, next) {
   try {
-    const categories = categoryModel.findAll();
+    const categories = await categoryModel.findAll();
 
     res.status(200).json({
       message: "Data kategori berhasil diambil",
@@ -41,7 +46,7 @@ function getCategories(req, res, next) {
   }
 }
 
-function getCategoryById(req, res, next) {
+async function getCategoryById(req, res, next) {
   try {
     const categoryId = parseCategoryId(req.params.id);
 
@@ -51,7 +56,7 @@ function getCategoryById(req, res, next) {
       });
     }
 
-    const category = categoryModel.findById(categoryId);
+    const category = await categoryModel.findById(categoryId);
 
     if (!category) {
       return res.status(404).json({
@@ -68,7 +73,7 @@ function getCategoryById(req, res, next) {
   }
 }
 
-function createCategory(req, res, next) {
+async function createCategory(req, res, next) {
   try {
     const validationErrors = validateCategory(req.body);
 
@@ -80,14 +85,14 @@ function createCategory(req, res, next) {
     }
 
     // Cegah nama kategori duplikat (case-insensitive)
-    const existing = categoryModel.findByName(req.body.name);
+    const existing = await categoryModel.findByName(req.body.name);
     if (existing) {
       return res.status(409).json({
         message: "Nama kategori sudah digunakan",
       });
     }
 
-    const category = categoryModel.create({
+    const category = await categoryModel.create({
       name: req.body.name,
       description: req.body.description ?? "",
     });
@@ -101,7 +106,7 @@ function createCategory(req, res, next) {
   }
 }
 
-function updateCategory(req, res, next) {
+async function updateCategory(req, res, next) {
   try {
     const categoryId = parseCategoryId(req.params.id);
 
@@ -121,14 +126,14 @@ function updateCategory(req, res, next) {
     }
 
     // Cegah nama duplikat, kecuali nama milik kategori itu sendiri
-    const existing = categoryModel.findByName(req.body.name);
+    const existing = await categoryModel.findByName(req.body.name);
     if (existing && existing.id !== categoryId) {
       return res.status(409).json({
         message: "Nama kategori sudah digunakan",
       });
     }
 
-    const category = categoryModel.update(categoryId, {
+    const category = await categoryModel.update(categoryId, {
       name: req.body.name,
       description: req.body.description ?? "",
     });
@@ -148,7 +153,7 @@ function updateCategory(req, res, next) {
   }
 }
 
-function deleteCategory(req, res, next) {
+async function deleteCategory(req, res, next) {
   try {
     const categoryId = parseCategoryId(req.params.id);
 
@@ -158,7 +163,7 @@ function deleteCategory(req, res, next) {
       });
     }
 
-    const category = categoryModel.remove(categoryId);
+    const category = await categoryModel.remove(categoryId);
 
     if (!category) {
       return res.status(404).json({

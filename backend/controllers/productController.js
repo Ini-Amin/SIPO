@@ -13,6 +13,11 @@ function parseProductId(id) {
 function validateProduct(body) {
   const errors = [];
 
+  if (!body || typeof body !== "object") {
+    errors.push("Data request body tidak ditemukan");
+    return errors;
+  }
+
   if (typeof body.name !== "string" || body.name.trim() === "") {
     errors.push("Nama produk wajib diisi");
   }
@@ -32,9 +37,9 @@ function validateProduct(body) {
   return errors;
 }
 
-function getProducts(req, res, next) {
+async function getProducts(req, res, next) {
   try {
-    const products = productModel.findAll();
+    const products = await productModel.findAll();
 
     res.status(200).json({
       message: "Data produk berhasil diambil",
@@ -45,7 +50,7 @@ function getProducts(req, res, next) {
   }
 }
 
-function getProductById(req, res, next) {
+async function getProductById(req, res, next) {
   try {
     const productId = parseProductId(req.params.id);
 
@@ -55,7 +60,7 @@ function getProductById(req, res, next) {
       });
     }
 
-    const product = productModel.findById(productId);
+    const product = await productModel.findById(productId);
 
     if (!product) {
       return res.status(404).json({
@@ -72,7 +77,7 @@ function getProductById(req, res, next) {
   }
 }
 
-function createProduct(req, res, next) {
+async function createProduct(req, res, next) {
   try {
     const validationErrors = validateProduct(req.body);
 
@@ -83,10 +88,11 @@ function createProduct(req, res, next) {
       });
     }
 
-    const product = productModel.create({
+    const product = await productModel.create({
       name: req.body.name.trim(),
       price: req.body.price,
       stock: req.body.stock,
+      category_id: req.body.category_id, // include category_id if provided
     });
 
     return res.status(201).json({
@@ -98,7 +104,7 @@ function createProduct(req, res, next) {
   }
 }
 
-function updateProduct(req, res, next) {
+async function updateProduct(req, res, next) {
   try {
     const productId = parseProductId(req.params.id);
 
@@ -117,10 +123,11 @@ function updateProduct(req, res, next) {
       });
     }
 
-    const product = productModel.update(productId, {
+    const product = await productModel.update(productId, {
       name: req.body.name.trim(),
       price: req.body.price,
       stock: req.body.stock,
+      category_id: req.body.category_id, // include category_id if provided
     });
 
     if (!product) {
@@ -138,7 +145,7 @@ function updateProduct(req, res, next) {
   }
 }
 
-function deleteProduct(req, res, next) {
+async function deleteProduct(req, res, next) {
   try {
     const productId = parseProductId(req.params.id);
 
@@ -148,7 +155,7 @@ function deleteProduct(req, res, next) {
       });
     }
 
-    const product = productModel.remove(productId);
+    const product = await productModel.remove(productId);
 
     if (!product) {
       return res.status(404).json({

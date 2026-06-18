@@ -1,12 +1,17 @@
-const { beforeEach, describe, test } = require("node:test");
+const { beforeEach, after, describe, test } = require("node:test");
 const assert = require("node:assert/strict");
 const request = require("supertest");
 
 const app = require("../app");
 const categoryModel = require("../models/categoryModel");
+const db = require("../config/db");
 
-beforeEach(() => {
-  categoryModel.resetCategories();
+beforeEach(async () => {
+  await categoryModel.resetCategories();
+});
+
+after(async () => {
+  await db.end();
 });
 
 describe("Category API", () => {

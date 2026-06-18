@@ -1,72 +1,95 @@
-const initialProducts = [
-  {
-    id: 1,
-    name: "Kabel HDMI",
-    price: 25000,
-    stock: 10,
-  },
-  {
-    id: 2,
-    name: "Mouse Wireless",
-    price: 75000,
-    stock: 5,
-  },
-];
+const db = require("../config/db");
 
-let products = initialProducts.map((product) => ({ ...product }));
-let nextId = 3;
-
-function findAll() {
-  return products.map((product) => ({ ...product }));
+async function findAll() {
+  const [rows] = await db.query("SELECT * FROM products ORDER BY id ASC");
+  return rows.map(row => ({
+    ...row,
+    price: Number(row.price), // mysql DECIMAL comes as string, convert to number
+  }));
 }
 
-function findById(id) {
-  const product = products.find((item) => item.id === id);
-  return product ? { ...product } : null;
+async function findById(id) {
+  const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
+  if (rows.length === 0) return null;
+  return {
+    ...rows[0],
+    price: Number(rows[0].price),
+  };
 }
 
-function create(productData) {
+async function create(productData) {
+  const name = productData.name.trim();
+  const price = productData.price;
+  const stock = productData.stock;
+  const categoryId = productData.category_id !== undefined ? productData.category_id : null;
+
+  const [result] = await db.query(
+    "INSERT INTO products (name, price, stock, category_id) VALUES (?, ?, ?, ?)",
+    [name, price, stock, categoryId]
+  );
+
   const product = {
-    id: nextId,
-    ...productData,
+    id: result.insertId,
+    name,
+    price,
+    stock,
   };
 
-  nextId += 1;
-  products.push(product);
+  if (categoryId !== null) {
+    product.category_id = categoryId;
+  }
 
-  return { ...product };
+  return product;
 }
 
-function update(id, productData) {
-  const productIndex = products.findIndex((item) => item.id === id);
+async function update(id, productData) {
+  const name = productData.name.trim();
+  const price = productData.price;
+  const stock = productData.stock;
+  const categoryId = productData.category_id !== undefined ? productData.category_id : null;
 
-  if (productIndex === -1) {
+  const [existing] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
+  if (existing.length === 0) {
     return null;
   }
 
-  products[productIndex] = {
+  await db.query(
+    "UPDATE products SET name = ?, price = ?, stock = ?, category_id = ? WHERE id = ?",
+    [name, price, stock, categoryId, id]
+  );
+
+  const product = {
     id,
-    ...productData,
+    name,
+    price,
+    stock,
   };
 
-  return { ...products[productIndex] };
-}
-
-function remove(id) {
-  const productIndex = products.findIndex((item) => item.id === id);
-
-  if (productIndex === -1) {
-    return null;
+  if (categoryId !== null) {
+    product.category_id = categoryId;
   }
 
-  const [deletedProduct] = products.splice(productIndex, 1);
-  return { ...deletedProduct };
+  return product;
 }
 
-// Mengembalikan data awal agar setiap pengujian berjalan secara independen.
-function resetProducts() {
-  products = initialProducts.map((product) => ({ ...product }));
-  nextId = 3;
+async function remove(id) {
+  const product = await findById(id);
+  if (!product) return null;
+
+  await db.query("DELETE FROM products WHERE id = ?", [id]);
+  return product;
+}
+
+// Untuk reset database saat pengujian (menghapus semua data dan memasukkan seed kembali)
+async function resetProducts() {
+  await db.query("SET FOREIGN_KEY_CHECKS = 0;");
+  await db.query("TRUNCATE TABLE products;");
+  await db.query(`
+    INSERT INTO products (id, category_id, name, price, stock) VALUES
+    (1, 1, 'Kabel HDMI', 25000, 10),
+    (2, 1, 'Mouse Wireless', 75000, 5)
+  `);
+  await db.query("SET FOREIGN_KEY_CHECKS = 1;");
 }
 
 module.exports = {
