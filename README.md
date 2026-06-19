@@ -7,7 +7,6 @@ SIPO adalah aplikasi Point of Sale (POS) berbasis web yang dirancang untuk memba
 ## Fitur yang Tersedia
 - **Manajemen Produk (CRUD)**: Menambah, mengubah, melihat, dan menghapus produk dengan peringatan otomatis untuk stok rendah (≤ 5 unit).
 - **Manajemen Kategori (CRUD)**: Pengelompokan produk dengan validasi dan konfirmasi penghapusan.
-- **Desain Modern Cyber Gelap (Dark Theme)**: Antarmuka premium dengan nuansa gelap (*dark cybernetic*) berbasis gradasi warna neon teal & violet, lengkap dengan efek glassmorphism dan modal transparan.
 - **Konfigurasi Proxy Vite**: Router frontend otomatis meneruskan request `/api/*` ke server backend Express (`http://localhost:3000`).
 
 ---
