@@ -77,27 +77,6 @@ SIPO/
 └── README.md
 ```
 
----
-
-## Catatan Penting untuk Codex
-
-Project ini sedang dalam tahap setup awal. Backend dibuat menggunakan Express Generator, tetapi tidak boleh memakai `res.render()` karena project ini tidak menggunakan view engine.
-
-Jika menemukan kode seperti ini:
-
-```js
-res.render("index", { title: "Express" });
-```
-
-ubah menjadi response JSON seperti ini:
-
-```js
-res.json({
-  message: "SIPO Backend API is running"
-});
-```
-
-Backend Express harus diperlakukan sebagai REST API, bukan server untuk render HTML.
 
 ---
 
