@@ -4,7 +4,7 @@ SIPO adalah aplikasi Point of Sale (POS) berbasis web yang dirancang untuk memba
 
 ---
 
-## 🚀 Fitur yang Tersedia
+## Fitur yang Tersedia
 - **Manajemen Produk (CRUD)**: Menambah, mengubah, melihat, dan menghapus produk dengan peringatan otomatis untuk stok rendah (≤ 5 unit).
 - **Manajemen Kategori (CRUD)**: Pengelompokan produk dengan validasi dan konfirmasi penghapusan.
 - **Desain Modern Cyber Gelap (Dark Theme)**: Antarmuka premium dengan nuansa gelap (*dark cybernetic*) berbasis gradasi warna neon teal & violet, lengkap dengan efek glassmorphism dan modal transparan.
@@ -12,7 +12,7 @@ SIPO adalah aplikasi Point of Sale (POS) berbasis web yang dirancang untuk memba
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 ### Frontend
 - **Framework**: React.js (via Vite)
 - **Styling**: Tailwind CSS & Lucide Icons
@@ -25,7 +25,7 @@ SIPO adalah aplikasi Point of Sale (POS) berbasis web yang dirancang untuk memba
 
 ---
 
-## 📂 Struktur Folder
+## Struktur Folder
 ```text
 SIPO/
 ├── backend/            # Express.js REST API
@@ -44,7 +44,7 @@ SIPO/
 
 ---
 
-## ⚡ Petunjuk Menjalankan Aplikasi
+## Petunjuk Menjalankan Aplikasi
 
 ### 1. Inisialisasi Database
 1. Pastikan Anda memiliki server MariaDB/MySQL yang berjalan.
@@ -70,9 +70,4 @@ npm run dev
 
 ---
 
-## 💡 Saran Pengembangan Selanjutnya
-Untuk melengkapi project SIPO menuju POS yang lengkap, berikut beberapa saran fitur berikutnya yang dapat diimplementasikan:
-1. **Fitur Transaksi Kasir (Cashier Page)**: Halaman untuk memilih produk, memasukkan ke keranjang belanja, kalkulasi otomatis subtotal/kembalian, dan mengirim transaksi ke backend.
-2. **Pengurangan Stok Otomatis**: Setiap transaksi sukses harus secara otomatis memotong stok produk yang dibeli melalui query transaksi database.
-3. **Riwayat Penjualan (Transaction History)**: Halaman rekapitulasi semua transaksi yang pernah dilakukan, lengkap dengan detail item yang dibeli.
-4. **Dashboard Statistik**: Halaman utama yang menampilkan ringkasan pendapatan, total produk terjual, dan diagram grafik transaksi harian.
+
