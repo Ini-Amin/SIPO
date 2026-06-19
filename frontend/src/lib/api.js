@@ -42,3 +42,27 @@ export async function deleteCategory(id) {
   });
   return response.data;
 }
+
+export async function createProduct(productData) {
+  const response = await apiRequest("/api/products", {
+    method: "POST",
+    body: JSON.stringify(productData),
+  });
+  return response.data;
+}
+
+export async function updateProduct(id, productData) {
+  const response = await apiRequest(`/api/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(productData),
+  });
+  return response.data;
+}
+
+export async function deleteProduct(id) {
+  const response = await apiRequest(`/api/products/${id}`, {
+    method: "DELETE",
+  });
+  return response.data;
+}
+
