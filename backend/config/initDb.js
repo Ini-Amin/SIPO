@@ -66,27 +66,37 @@ async function init() {
     // 5. Masukkan data awal (Seeding)
     console.log("Mengisi data awal...");
 
-    // Cek apakah kategori kosong
-    const [existingCategories] = await connection.query("SELECT COUNT(*) as count FROM categories");
-    if (existingCategories[0].count === 0) {
-      console.log("Mengisi tabel categories...");
-      await connection.query(`
-        INSERT INTO categories (id, name, description) VALUES
-        (1, 'Elektronik', 'Produk-produk elektronik dan aksesorisnya'),
-        (2, 'Alat Tulis', 'Perlengkapan kantor dan alat tulis')
-      `);
-    }
+    // Truncate tables to allow fresh seeding
+    await connection.query("SET FOREIGN_KEY_CHECKS = 0;");
+    await connection.query("TRUNCATE TABLE products;");
+    await connection.query("TRUNCATE TABLE categories;");
+    await connection.query("SET FOREIGN_KEY_CHECKS = 1;");
 
-    // Cek apakah produk kosong
-    const [existingProducts] = await connection.query("SELECT COUNT(*) as count FROM products");
-    if (existingProducts[0].count === 0) {
-      console.log("Mengisi tabel products...");
-      await connection.query(`
-        INSERT INTO products (id, category_id, name, price, stock) VALUES
-        (1, 1, 'Kabel HDMI', 25000, 10),
-        (2, 1, 'Mouse Wireless', 75000, 5)
-      `);
-    }
+    console.log("Mengisi tabel categories...");
+    await connection.query(`
+      INSERT INTO categories (id, name, description) VALUES
+      (1, 'Elektronik', 'Produk-produk elektronik dan perangkat pintar'),
+      (2, 'Alat Tulis', 'Perlengkapan kantor, sekolah, dan alat tulis'),
+      (3, 'Aksesoris Komputer', 'Perangkat input, output, dan aksesoris PC'),
+      (4, 'Mebel & Rumah Tangga', 'Perabotan rumah tangga dan perlengkapan kerja'),
+      (5, 'Makanan & Minuman', 'Kopi, susu, dan bahan konsumsi lainnya')
+    `);
+
+    console.log("Mengisi tabel products...");
+    await connection.query(`
+      INSERT INTO products (id, category_id, name, price, stock) VALUES
+      (1, 1, 'Kabel HDMI 2.0 2m', 25000, 15),
+      (2, 3, 'Mouse Wireless Silent', 75000, 8),
+      (3, 3, 'Keyboard Mechanical Red Switch', 350000, 12),
+      (4, 3, 'Headset Gaming RGB', 250000, 6),
+      (5, 1, 'Monitor LED 24 Inch IPS', 1450000, 4),
+      (6, 4, 'Meja Kerja Minimalis', 420000, 5),
+      (7, 4, 'Kursi Kantor Ergonomis', 850000, 7),
+      (8, 5, 'Kopi Arabika Toraja 250g', 68000, 20),
+      (9, 5, 'Susu UHT Full Cream 1L', 18500, 25),
+      (10, 2, 'Pulpen Gel Hitam 0.5mm', 4500, 100),
+      (11, 2, 'Buku Catatan Grid A5', 12000, 35)
+    `);
 
     console.log("Inisialisasi database BERHASIL!");
   } catch (error) {
