@@ -2,29 +2,40 @@ const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 async function init() {
-  const host = process.env.DB_HOST || "127.0.0.1";
-  const user = process.env.DB_USER || "root";
-  const password = process.env.DB_PASSWORD || "";
-  const dbName = process.env.DB_NAME || "sipo_db";
-  const port = process.env.DB_PORT || 3306;
+  const dbConfig = process.env.DATABASE_URL
+    ? process.env.DATABASE_URL
+    : {
+        host: process.env.DB_HOST || "127.0.0.1",
+        user: process.env.DB_USER || "root",
+        password: process.env.DB_PASSWORD || "",
+        port: process.env.DB_PORT || 3306,
+      };
+
+  const dbName = process.env.DATABASE_URL
+    ? new URL(process.env.DATABASE_URL).pathname.replace("/", "")
+    : (process.env.DB_NAME || "sipo_db");
 
   console.log("Menghubungkan ke MySQL/MariaDB...");
   
-  // 1. Buat koneksi awal tanpa memilih database
-  const connection = await mysql.createConnection({
-    host,
-    user,
-    password,
-    port,
-  });
+  // 1. Buat koneksi awal
+  const connection = typeof dbConfig === "string"
+    ? await mysql.createConnection({
+        uri: dbConfig,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      })
+    : await mysql.createConnection(dbConfig);
 
   try {
-    // 2. Buat database jika belum ada
-    console.log(`Membuat database '${dbName}' jika belum ada...`);
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-    
-    // Pilih database
-    await connection.query(`USE \`${dbName}\`;`);
+    // 2. Buat database jika menggunakan konfigurasi lokal / non-URI
+    if (typeof dbConfig !== "string") {
+      console.log(`Membuat database '${dbName}' jika belum ada...`);
+      await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+      await connection.query(`USE \`${dbName}\`;`);
+    } else {
+      console.log(`Menggunakan database '${dbName}' dari URI...`);
+    }
 
     // 3. Buat tabel categories
     console.log("Membuat tabel 'categories'...");
