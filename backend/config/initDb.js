@@ -63,11 +63,40 @@ async function init() {
       );
     `);
 
-    // 5. Masukkan data awal (Seeding)
+    // 5. Membuat tabel transactions
+    console.log("Membuat tabel 'transactions'...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        transaction_code VARCHAR(100) NOT NULL UNIQUE,
+        total_price DECIMAL(12,2) NOT NULL,
+        amount_paid DECIMAL(12,2) NOT NULL,
+        change_due DECIMAL(12,2) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 6. Membuat tabel transaction_details
+    console.log("Membuat tabel 'transaction_details'...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS transaction_details (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        transaction_id INT NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL,
+        price DECIMAL(12,2) NOT NULL,
+        FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+      );
+    `);
+
+    // 7. Masukkan data awal (Seeding)
     console.log("Mengisi data awal...");
 
     // Truncate tables to allow fresh seeding
     await connection.query("SET FOREIGN_KEY_CHECKS = 0;");
+    await connection.query("TRUNCATE TABLE transaction_details;");
+    await connection.query("TRUNCATE TABLE transactions;");
     await connection.query("TRUNCATE TABLE products;");
     await connection.query("TRUNCATE TABLE categories;");
     await connection.query("SET FOREIGN_KEY_CHECKS = 1;");
@@ -96,6 +125,19 @@ async function init() {
       (9, 5, 'Susu UHT Full Cream 1L', 18500, 25),
       (10, 2, 'Pulpen Gel Hitam 0.5mm', 4500, 100),
       (11, 2, 'Buku Catatan Grid A5', 12000, 35)
+    `);
+
+    console.log("Mengisi tabel transactions...");
+    await connection.query(`
+      INSERT INTO transactions (id, transaction_code, total_price, amount_paid, change_due, created_at) VALUES
+      (1, 'TRX-20260701-0001', 125000, 150000, 25000, '2026-07-01 23:00:00')
+    `);
+
+    console.log("Mengisi tabel transaction_details...");
+    await connection.query(`
+      INSERT INTO transaction_details (id, transaction_id, product_id, quantity, price) VALUES
+      (1, 1, 1, 2, 25000),
+      (2, 1, 2, 1, 75000)
     `);
 
     console.log("Inisialisasi database BERHASIL!");

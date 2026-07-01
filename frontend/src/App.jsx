@@ -1,10 +1,27 @@
 import { useState } from "react";
 import Products from "@/pages/Products";
 import Categories from "@/pages/Categories";
+import Checkout from "@/pages/Checkout";
+import History from "@/pages/History";
 import { ShoppingCart } from "lucide-react";
 
 function App() {
   const [activeTab, setActiveTab] = useState("products");
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "products":
+        return <Products />;
+      case "categories":
+        return <Categories />;
+      case "checkout":
+        return <Checkout />;
+      case "history":
+        return <History />;
+      default:
+        return <Products />;
+    }
+  };
 
   return (
     <div className="min-h-svh text-slate-100">
@@ -44,6 +61,26 @@ function App() {
               >
                 Kategori
               </button>
+              <button
+                onClick={() => setActiveTab("checkout")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all cursor-pointer ${
+                  activeTab === "checkout"
+                    ? "bg-white/10 text-cyan-400 shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                Transaksi
+              </button>
+              <button
+                onClick={() => setActiveTab("history")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all cursor-pointer ${
+                  activeTab === "history"
+                    ? "bg-white/10 text-cyan-400 shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                Riwayat Transaksi
+              </button>
             </nav>
           </div>
         </div>
@@ -51,7 +88,7 @@ function App() {
 
       <main className="py-6">
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-          {activeTab === "products" ? <Products /> : <Categories />}
+          {renderContent()}
         </div>
       </main>
     </div>

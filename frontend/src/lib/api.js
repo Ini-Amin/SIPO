@@ -68,3 +68,21 @@ export async function deleteProduct(id) {
   return response.data;
 }
 
+export async function getTransactions() {
+  const response = await apiRequest("/api/transactions");
+  return response.data;
+}
+
+export async function getTransactionById(id) {
+  const response = await apiRequest(`/api/transactions/${id}`);
+  return response.data;
+}
+
+export async function createTransaction(transactionData) {
+  const response = await apiRequest("/api/transactions", {
+    method: "POST",
+    body: JSON.stringify(transactionData),
+  });
+  return response.data;
+}
+

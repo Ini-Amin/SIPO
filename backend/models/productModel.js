@@ -83,6 +83,8 @@ async function remove(id) {
 // Untuk reset database saat pengujian (menghapus semua data dan memasukkan seed kembali)
 async function resetProducts() {
   await db.query("SET FOREIGN_KEY_CHECKS = 0;");
+  await db.query("TRUNCATE TABLE transaction_details;");
+  await db.query("TRUNCATE TABLE transactions;");
   await db.query("TRUNCATE TABLE products;");
   await db.query(`
     INSERT INTO products (id, category_id, name, price, stock) VALUES
